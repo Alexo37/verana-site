@@ -433,9 +433,39 @@ body{font-family:var(--body);background:var(--paper);color:var(--tinta);-webkit-
   .topflow__bg{transform:none!important}
 }
 @media(prefers-reduced-motion:reduce){ *{animation-duration:.001ms!important;transition:none!important} }
+
+/* ===== Cortinilla de bienvenida: lluvia de Veras ===== */
+#welcome{position:fixed;inset:0;z-index:5000;overflow:hidden;
+  background-color:var(--verde-osc);
+  background-image:var(--tex-tint),var(--v-tossed);
+  background-repeat:no-repeat,repeat;background-size:cover,300px auto;
+  display:grid;place-items:center;
+  transition:transform .62s cubic-bezier(.7,0,.25,1);will-change:transform}
+.no-welcome #welcome{display:none}
+html.welcoming,html.welcoming body{overflow:hidden}
+#welcome.lift{transform:translateY(-102%)}
+#welcome.done{opacity:0;pointer-events:none;transition:opacity .4s ease}
+#welcome[hidden]{display:none}
+.wl__hero{width:min(44vw,240px);filter:drop-shadow(0 12px 0 rgba(0,0,0,.22));
+  animation:wlHero .9s cubic-bezier(.2,1.25,.3,1) both;z-index:2}
+.wl__pieces{position:absolute;inset:0;pointer-events:none;z-index:1}
+.wl__pieces img{position:absolute;top:0;width:var(--s);left:var(--x);opacity:0;
+  animation:wlFall var(--d) cubic-bezier(.45,.05,.55,.95) var(--dl) forwards}
+@keyframes wlFall{
+  0%{opacity:0;transform:translate3d(0,-22vh,0) rotate(0deg)}
+  10%{opacity:1}
+  92%{opacity:1}
+  100%{opacity:.85;transform:translate3d(var(--sway),120vh,0) rotate(var(--r))}}
+@keyframes wlHero{0%{opacity:0;transform:scale(.35) rotate(-14deg)}55%{opacity:1}100%{opacity:1;transform:scale(1) rotate(0)}}
+@media (prefers-reduced-motion:reduce){#welcome{display:none!important}}
 </style>
+<script>try{if(sessionStorage.getItem('vera_welcome_seen'))document.documentElement.classList.add('no-welcome');}catch(e){}</script>
 </head>
 <body>
+<div id="welcome" aria-hidden="true">
+  <div class="wl__pieces" id="wlPieces"></div>
+  <img class="wl__hero" src="verana-assets/mascot/vera-verde.png" alt="">
+</div>
 <header class="hdr" id="hdr">
   <div class="wrap hdr__in">
     <a class="brand" href="#top" id="brandLink" aria-label="Verana">
@@ -1236,6 +1266,38 @@ function showAddedToast(){
 
 applyLang(LANG);                              // renderiza todo; la caja arranca vacía (box2d 2D/SVG)
 initParallax();                               // una sola vez: listener de scroll, ver arriba
+</script>
+<script>
+/* Cortinilla de bienvenida: lluvia de Veras + telon que se levanta */
+(function(){
+  var el=document.getElementById('welcome');
+  if(!el) return;
+  if(getComputedStyle(el).display==='none') return;           // ya vista / reduced-motion
+  try{sessionStorage.setItem('vera_welcome_seen','1');}catch(e){}
+  document.documentElement.classList.add('welcoming');
+  var pieces=document.getElementById('wlPieces');
+  var colors=['rosa','verde','lila','celeste','rojo'];
+  var N=Math.max(12,Math.min(24,Math.round(innerWidth/32)));
+  for(var i=0;i<N;i++){
+    var img=document.createElement('img');
+    img.src='verana-assets/mascot/vera-mini-'+colors[i%colors.length]+'.png';
+    img.alt='';img.decoding='async';
+    var s=(32+Math.random()*56)|0;
+    img.style.setProperty('--s',s+'px');
+    img.style.setProperty('--x',(Math.random()*95).toFixed(1)+'%');
+    img.style.setProperty('--d',(1.0+Math.random()*0.75).toFixed(2)+'s');
+    img.style.setProperty('--dl',(Math.random()*0.65).toFixed(2)+'s');
+    img.style.setProperty('--r',((Math.random()*180-90)|0)+'deg');
+    img.style.setProperty('--sway',((Math.random()*90-45)|0)+'px');
+    pieces.appendChild(img);
+  }
+  setTimeout(function(){el.classList.add('lift');},1500);
+  setTimeout(function(){
+    el.classList.add('done');
+    document.documentElement.classList.remove('welcoming');
+    setTimeout(function(){el.setAttribute('hidden','');},450);
+  },2200);
+})();
 </script>
 </body>
 </html>
