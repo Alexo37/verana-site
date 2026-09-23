@@ -1,0 +1,1211 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verana — Arma tu semana</title>
+<meta name="description" content="Arma tu caja de 5 smoothies Verana y pide por WhatsApp. Bolsitas de panelas que se disuelven en agua.">
+<style>
+/* Tipografia de marca: Bakso Menu (display) + Prompt (cuerpo/UI) */
+@font-face{ font-family:'Bakso Menu'; src:url('verana-assets/fonts/BaksoMenu.ttf') format('truetype'); font-weight:100 900; font-style:normal; font-display:swap; }
+@font-face{ font-family:'Prompt'; src:url('verana-assets/fonts/Prompt-Light.ttf') format('truetype'); font-weight:300; font-style:normal; font-display:swap; }
+@font-face{ font-family:'Prompt'; src:url('verana-assets/fonts/Prompt-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face{ font-family:'Prompt'; src:url('verana-assets/fonts/Prompt-Medium.ttf') format('truetype'); font-weight:500; font-style:normal; font-display:swap; }
+@font-face{ font-family:'Prompt'; src:url('verana-assets/fonts/Prompt-SemiBold.ttf') format('truetype'); font-weight:600; font-style:normal; font-display:swap; }
+@font-face{ font-family:'Prompt'; src:url('verana-assets/fonts/Prompt-Bold.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+:root{
+  --paper:#ffffff; --tinta:#111111;
+  /* paleta oficial VERANA: 4 colorways (oscuro/relleno + claro/contorno) */
+  --verde-osc:#005200; --verde-luz:#00e37a;
+  --rojo:#d2002b; --rosa:#ffabbd;
+  --morado:#560072; --lila:#dcabff;
+  --azul:#04006f; --celeste:#86e7ff;
+  --stroke:3px; --r:22px; --ease:cubic-bezier(.2,.9,.25,1);
+  --display:'Bakso Menu',system-ui,-apple-system,sans-serif;
+  --body:'Prompt',system-ui,-apple-system,sans-serif;
+  /* isotipo "V" (LOGO-34.svg) esparcido a angulos variados, tenue, estilo papel de regalo.
+     un solo <path> reutilizado via <use> para mantener el data-URI liviano. */
+  --v-tossed:url('verana-assets/textures/verana-pattern-seamless.webp');
+  --tex-tint:linear-gradient(rgba(0,40,0,.82),rgba(0,40,0,.82)); /* vela verde oscura translucida: atenua y oscurece la textura */
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--paper);color:var(--tinta);-webkit-font-smoothing:antialiased}
+.wrap{width:min(1040px,94vw);margin-inline:auto}
+.btn{font-family:var(--body);font-weight:700;font-size:1rem;display:inline-flex;align-items:center;gap:.5em;
+  padding:.75em 1.3em;border-radius:999px;border:var(--stroke) solid var(--tinta);background:var(--verde-luz);
+  color:var(--verde-osc);cursor:pointer;box-shadow:0 5px 0 var(--tinta);transition:transform .12s var(--ease),box-shadow .12s var(--ease)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--tinta)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:0 5px 0 var(--tinta)}
+.btn.alt{background:var(--rojo);color:#fff}
+.btn.ghost{background:transparent;color:var(--verde-osc)}
+.kicker{display:inline-block;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--verde-osc);color:var(--verde-luz);padding:.35em .8em;border-radius:999px}
+/* header: mismo verde + textura tosca que el hero/builder, para una superficie continua */
+/* banner superior: tono verde propio, sin la textura de V, para diferenciarlo del cuerpo */
+.hdr{position:sticky;top:0;z-index:40;background:#013a00;border-bottom:3px solid var(--verde-luz);
+  box-shadow:0 4px 0 rgba(0,0,0,.22);transition:box-shadow .2s var(--ease)}
+.hdr--scrolled{box-shadow:0 7px 20px rgba(0,0,0,.4)}
+.hdr__in{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.5rem 0;transition:padding .2s var(--ease)}
+.hdr--scrolled .hdr__in{padding:.3rem 0}
+.brand{display:inline-flex;align-items:center;text-decoration:none;transition:transform .15s var(--ease)}
+.brand:hover{transform:rotate(-2deg) scale(1.03)}
+.brand:focus-visible{outline:3px solid var(--verde-luz);outline-offset:4px;border-radius:12px}
+.brand__logo{height:46px;width:auto;display:block;filter:drop-shadow(2px 3px 0 rgba(0,0,0,.35));transition:height .2s var(--ease)}
+.hdr--scrolled .brand__logo{height:38px}
+.hdr__nav{display:flex;gap:.4rem}
+.hdr__nav a{font-family:var(--body);font-weight:700;font-size:.92rem;color:var(--verde-luz);text-decoration:none;
+  padding:.42em .95em;border-radius:999px;border:2.5px solid transparent;
+  transition:transform .15s var(--ease),background .15s,color .15s,border-color .15s,box-shadow .15s}
+.hdr__nav a:hover{background:var(--verde-luz);color:var(--verde-osc);border-color:var(--tinta);box-shadow:0 3px 0 var(--tinta);transform:translateY(-1px)}
+@media(max-width:820px){.hdr__nav{display:none}}
+.hdr__right{display:flex;align-items:center;gap:.6rem}
+.lang{display:flex;border:2.5px solid var(--tinta);border-radius:999px;overflow:hidden;font-weight:700;font-size:.8rem;box-shadow:0 3px 0 var(--tinta)}
+.lang button{background:#fff;color:var(--verde-osc);border:none;padding:.42em .8em;cursor:pointer;font-family:var(--body);font-weight:700;transition:background .15s}
+.lang button.on{background:var(--verde-luz);color:var(--verde-osc)}
+.cartbtn{position:relative;width:46px;height:46px;border-radius:50%;border:var(--stroke) solid var(--tinta);
+  background:var(--rojo);color:#fff;cursor:pointer;font-size:1.2rem;display:grid;place-content:center;box-shadow:0 4px 0 var(--tinta);transition:transform .15s var(--ease)}
+.cartbtn:hover{transform:translateY(-2px) rotate(-5deg)}
+.cartbtn__n{position:absolute;top:-8px;right:-8px;min-width:22px;height:22px;padding:0 5px;border-radius:999px;
+  background:var(--verde-luz);border:2.5px solid var(--tinta);color:var(--verde-osc);font-size:.72rem;font-weight:700;display:grid;place-content:center}
+.cartbtn.empty .cartbtn__n{display:none}
+.sec{padding:2.2rem 0}
+.sec__head{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;gap:.7rem;margin-bottom:1.2rem}
+.sec__head h2{font-family:var(--display);font-weight:400;font-size:clamp(1.7rem,4vw,2.4rem);margin:0}
+.menu__peek{width:52px;height:auto;transform:rotate(-8deg);filter:drop-shadow(2px 3px 0 rgba(0,0,0,.25));pointer-events:none}
+@media(max-width:560px){.menu__peek{display:none}}
+/* seccion menu: full-width con fondo crema propio (no blanco puro) para pertenecer al sistema de marca;
+   el <section> ya no lleva .wrap (ver HTML), asi que el fondo llega de borde a borde y un .wrap interno
+   limita el contenido */
+.menu-sec{background:#fbf4e6;padding:3.4rem 0 3.6rem}
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.3rem}
+/* tarjetas de sabor = stickers de colorway: ribbon superior en el color del sabor + cuerpo blanco.
+   --fc/--fa/--fk llegan inline desde menuCardHTML (color, acento, tinta legible) */
+.menu .mcard{border:var(--stroke) solid var(--tinta);border-radius:var(--r);background:#fff;overflow:hidden;
+  box-shadow:0 6px 0 var(--tinta);display:flex;flex-direction:column;cursor:pointer;
+  transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
+.menu .mcard:nth-child(odd){--rot:-1.4deg}
+.menu .mcard:nth-child(even){--rot:1.1deg}
+.menu .mcard.reveal.in{transform:rotate(var(--rot,0))}
+.menu .mcard.reveal.in:hover,.menu .mcard.reveal.in:focus-within{
+  transform:rotate(0deg) translateY(-8px);box-shadow:0 13px 0 var(--tinta)}
+.mcard__ribbon{position:relative;display:flex;align-items:center;justify-content:space-between;gap:.5rem;
+  background:var(--fc);color:var(--fk);padding:.65rem .8rem;border-bottom:var(--stroke) solid var(--tinta);overflow:hidden}
+.mcard__iso{position:absolute;right:-8px;top:-12px;width:66px;height:66px;opacity:.2;pointer-events:none}
+.mcard__iso svg{width:100%;height:100%;display:block}
+.mcard__name{font-family:var(--display);font-weight:400;font-size:1.35rem;line-height:1;position:relative;z-index:1}
+.mcard__mini{width:50px;height:50px;object-fit:contain;flex:none;position:relative;z-index:1;
+  filter:drop-shadow(2px 3px 0 rgba(0,0,0,.22))}
+.mcard__body{padding:.85rem .95rem .3rem;display:flex;flex-direction:column;gap:.55rem;flex:1}
+.mcard__benefit{font-size:.9rem;color:#333;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.chip{font-size:.72rem;font-weight:600;border:2px solid var(--tinta);border-radius:999px;padding:.15em .6em;background:#fff}
+.mcard__foot{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:auto;padding:.7rem .95rem .9rem}
+.mcard__price{font-family:var(--display);font-weight:400;font-size:1.1rem;color:var(--tinta)}
+.mcard__price small{font-family:var(--body);font-weight:600;font-size:.68rem;opacity:.7}
+.mcard__footbtns{display:flex;align-items:center;gap:.55rem}
+.linkbtn{background:none;border:none;color:var(--verde-osc);font-weight:600;font-size:.8rem;cursor:pointer;padding:.2em 0;text-decoration:underline}
+/* dividers de seccion: onda SVG que "corta" el color anterior hacia el siguiente, con trazo sticker encima */
+.divider{position:relative;height:52px;line-height:0;overflow:hidden}
+.divider svg{display:block;width:100%;height:100%}
+.divider--toMenu{background:var(--verde-osc)}
+.divider--toHow{background:#fbf4e6}
+.divider--toFooter{background:var(--rosa)}
+@media(max-width:640px){.divider{height:32px}}
+/* modal genérico */
+.modal[hidden]{display:none}
+.modal{position:fixed;inset:0;z-index:80;background:rgba(17,17,17,.5);display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:600px){.modal{align-items:center}}
+.modal__panel{background:#fff;width:min(560px,100%);max-height:88vh;overflow:auto;border:var(--stroke) solid var(--tinta);
+  border-radius:24px 24px 0 0;padding:1.4rem;box-shadow:0 10px 0 var(--tinta),0 22px 44px rgba(0,0,0,.35)}
+@media(min-width:600px){.modal__panel{border-radius:24px}}
+.modal__head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.8rem}
+.modal__head h3{font-family:var(--display);font-weight:400;margin:0;font-size:1.7rem}
+.modal__x{background:#fff;border:2.5px solid var(--tinta);border-radius:50%;width:36px;height:36px;
+  display:grid;place-content:center;font-size:1.15rem;line-height:1;cursor:pointer;box-shadow:0 3px 0 var(--tinta);
+  transition:transform .15s var(--ease),box-shadow .15s var(--ease)}
+.modal__x:hover{transform:translateY(-2px) rotate(-6deg)}
+.modal__x:active{transform:translateY(2px);box-shadow:0 1px 0 var(--tinta)}
+.detail__block{margin:.8rem 0}
+.detail__block h4{margin:0 0 .3rem;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--verde-osc)}
+.detail__claim{background:var(--verde-luz);border:2.5px solid var(--tinta);border-radius:14px;padding:.7rem;font-weight:600}
+/* superficie de marca continua: header + hero + builder comparten un mismo verde texturizado,
+   sin divisores duros entre ellos. .topflow__bg lleva la textura y el parallax (ver JS);
+   hero/builder quedan por encima en su propio nivel de apilamiento. */
+.topflow{position:relative;overflow:hidden;background:var(--verde-osc);
+  border-bottom:var(--stroke) solid var(--tinta)}
+.topflow__bg{position:absolute;left:-2%;right:-2%;top:-90px;bottom:-90px;z-index:0;pointer-events:none;
+  background:var(--tex-tint),var(--v-tossed) 0 0/560px auto repeat;will-change:transform}
+/* franja hero: wordmark grande + Vera, protagonistas sobre la textura */
+.hero{position:relative;z-index:1}
+.hero__in{display:flex;align-items:center;justify-content:center;gap:1.6rem;flex-wrap:wrap;padding:3rem 0 2rem}
+.hero__logo{width:min(620px,80vw);height:auto;filter:drop-shadow(4px 6px 0 rgba(0,0,0,.3))}
+.hero__vera{width:clamp(80px,12vw,150px);height:auto;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3))}
+.hero__desc{max-width:600px;margin:-.2rem auto 0;padding:0 16px 1.4rem;text-align:center;color:rgba(255,255,255,.92);font-weight:500;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.55;position:relative;z-index:1;animation:heroPop .6s var(--ease) .26s both}
+.hero__desc .hl{color:var(--verde-osc);background:var(--verde-luz);border-radius:8px;padding:.03em .4em;box-decoration-break:clone;-webkit-box-decoration-break:clone;font-weight:700}
+.hero__natural{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:.15rem;margin:0 auto .3rem;padding:0 16px;text-align:center;animation:heroPop .6s var(--ease) .2s both}
+.hero__natural-row{display:flex;align-items:center;justify-content:center;gap:.55rem;flex-wrap:wrap}
+.hero__natural-big{font-family:var(--display);font-weight:400;font-size:clamp(1.7rem,5vw,2.9rem);line-height:1;color:var(--verde-luz);text-shadow:3px 4px 0 rgba(0,0,0,.35)}
+.hero__natural-dot{font-family:var(--display);color:var(--rosa);font-size:clamp(1.4rem,4vw,2.4rem);line-height:1}
+.hero__natural-sub{font-family:var(--body);font-weight:600;font-size:clamp(.95rem,2.1vw,1.15rem);color:#fff;opacity:.92}
+@media(max-width:640px){ .hero__vera{width:clamp(130px,40vw,200px)} }
+.hero__glow{position:absolute;left:50%;top:42%;width:min(880px,116%);height:460px;transform:translate(-50%,-50%);z-index:0;pointer-events:none;background:radial-gradient(closest-side,rgba(0,227,122,.22),rgba(0,227,122,0) 70%)}
+.hero__spark{position:absolute;pointer-events:none;background:var(--verde-luz);z-index:1;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);filter:drop-shadow(2px 2px 0 rgba(0,0,0,.25));animation:twinkle 2.8s ease-in-out infinite}
+.hero__spark.s1{width:26px;height:26px;left:12%;top:30%}
+.hero__spark.s2{width:18px;height:18px;right:16%;top:22%;background:var(--rosa);animation-delay:.8s}
+.hero__spark.s3{width:16px;height:16px;left:26%;bottom:38%;background:var(--celeste);animation-delay:1.5s}
+.hero__cta{display:flex;justify-content:center;padding:.2rem 0 3rem;position:relative;z-index:1;animation:heroPop .6s var(--ease) .4s both}
+.hero__cta a{font-family:var(--display);font-weight:400;font-size:clamp(1.2rem,3vw,1.5rem);padding:.5em 1.4em;background:var(--rojo);color:#fff;transform:rotate(-1.6deg)}
+.hero__cta a:hover{transform:rotate(-1.6deg) translateY(-3px);box-shadow:0 9px 0 var(--tinta)}
+@keyframes twinkle{0%,100%{transform:scale(.65) rotate(0);opacity:.3}50%{transform:scale(1.1) rotate(18deg);opacity:.95}}
+@keyframes heroPop{0%{opacity:0;transform:translateY(20px) scale(.92)}60%{transform:translateY(-5px) scale(1.02)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.hero__logo{animation:heroPop .7s var(--ease) both}
+.hero__vera{animation:heroPop .7s var(--ease) .12s both}
+.builder{position:relative;z-index:1;color:#fff}
+.builder .wrap{padding:1.6rem 0 2rem}
+.builder__head{text-align:center}
+.builder__head h2{font-family:var(--display);font-weight:400;font-size:clamp(1.8rem,5vw,2.8rem);margin:.2rem 0}
+.builder__hint{opacity:.9;margin:.2rem 0 1rem}
+.stage{width:100%}
+/* escena: caja "cajita feliz" ilustrada + Vera al lado */
+.scene{position:relative;display:flex;flex-direction:column;align-items:center;gap:1.1rem;padding-top:1.4rem}
+.carton{position:relative;flex:0 1 480px;min-width:0;max-width:480px;aspect-ratio:220/170}
+.carton__art{position:absolute;inset:0;width:100%;height:100%;overflow:visible;display:block;
+  filter:drop-shadow(3px 5px 0 rgba(0,58,0,.4)) drop-shadow(9px 13px 0 rgba(0,0,0,.4));
+  transform-origin:50% 90%}
+.carton.wiggle .carton__art{animation:boxWiggle .55s var(--ease)}
+@keyframes boxWiggle{
+  0%{transform:rotate(0) translateY(0)}
+  18%{transform:rotate(-2deg) translateY(-3px) scale(1.02)}
+  40%{transform:rotate(1.6deg) translateY(1px)}
+  62%{transform:rotate(-1deg)}
+  82%{transform:rotate(.4deg)}
+  100%{transform:rotate(0) translateY(0)}
+}
+.box2d{display:grid;grid-template-columns:repeat(5,1fr);gap:.55rem;width:min(430px,94%);
+  background:rgba(0,0,0,.2);border:var(--stroke) solid var(--tinta);border-radius:18px;padding:.6rem;box-shadow:0 5px 0 rgba(0,0,0,.3)}
+.box2d.wiggle{animation:boxWiggle .5s var(--ease)}
+.slot{position:relative;overflow:visible;aspect-ratio:1;border:2.5px dashed rgba(255,255,255,.4);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;min-height:0}
+.slot.filled{border-style:solid;border-color:var(--tinta);cursor:pointer}
+.slot.waiting{animation:waitPulse 1.1s ease-in-out infinite}
+@keyframes waitPulse{50%{border-color:rgba(17,17,17,.12)}}
+.slotItem{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.miniVera{width:88%;height:auto;max-height:100%;object-fit:contain;display:block;
+  filter:drop-shadow(2px 3px 0 rgba(0,0,0,.3))}
+.slot.filled.land .slotItem{animation:landPop .5s var(--ease)}
+@keyframes landPop{
+  0%{transform:translateY(-14px) scale(.55,1.32);opacity:.65}
+  40%{transform:translateY(6px) scale(1.22,.82)}
+  62%{transform:translateY(-5px) scale(.93,1.08)}
+  82%{transform:translateY(2px) scale(1.04,.98)}
+  100%{transform:translateY(0) scale(1,1);opacity:1}
+}
+/* poof al quitar una bolsita de la caja */
+.poofPuff{position:absolute;top:55%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
+  background:rgba(255,255,255,.92);opacity:0;pointer-events:none}
+.poofPuff.p1{--px:-16px;--py:-18px}
+.poofPuff.p2{--px:14px;--py:-22px}
+.poofPuff.p3{--px:0px;--py:-28px}
+.slot.poof{cursor:default}
+/* misma especificidad que .slot.filled.land .slotItem (4 clases) pero declarada despues: el poof
+   siempre gana si un slot todavia trae la clase "land" de su animacion de llegada */
+.slot.filled.poof .slotItem{animation:poofShrink .26s ease-in forwards}
+.slot.poof .poofPuff{animation:poofOut .3s ease-out forwards}
+.slot.poof .poofPuff.p2{animation-delay:.02s}
+.slot.poof .poofPuff.p3{animation-delay:.04s}
+@keyframes poofShrink{0%{transform:scale(1);opacity:1}100%{transform:scale(.25) translateY(-6px);opacity:0}}
+@keyframes poofOut{0%{transform:translate(0,0) scale(.3);opacity:.9}100%{transform:translate(var(--px,0),var(--py,-22px)) scale(1.15);opacity:0}}
+/* efecto de llegada: anillo pop + chispas + lineas de movimiento */
+.burst{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:4}
+.burstRing{position:absolute;top:38%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
+  border:4px solid var(--fa,#fff);animation:ringPop .5s var(--ease) forwards}
+@keyframes ringPop{0%{transform:scale(.3);opacity:1}70%{opacity:.55}100%{transform:scale(3.1);opacity:0;border-width:1px}}
+.spark{position:absolute;top:38%;left:50%;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:var(--fc,#fff);
+  border:2px solid var(--fa,#111);opacity:0;animation:sparkOut .55s cubic-bezier(.2,.9,.3,1) forwards}
+.spark.s1{--tx:38px;--ty:-6px}.spark.s2{--tx:22px;--ty:-30px}.spark.s3{--tx:-10px;--ty:-36px}
+.spark.s4{--tx:-34px;--ty:-10px}.spark.s5{--tx:-20px;--ty:20px}.spark.s6{--tx:18px;--ty:22px}
+@keyframes sparkOut{
+  0%{transform:translate(0,0) rotate(20deg) scale(0);opacity:0}
+  25%{opacity:1}
+  100%{transform:translate(var(--tx),var(--ty)) rotate(120deg) scale(1);opacity:0}
+}
+.mline{position:absolute;top:18%;left:50%;width:3px;height:20px;margin:0 0 0 -1.5px;border-radius:3px;
+  background:var(--fa,#fff);opacity:0;animation:mlineFade .3s ease-out forwards}
+.mline.m1{transform:rotate(-26deg) translateY(-6px)}
+.mline.m2{transform:rotate(0deg) translateY(-14px)}
+.mline.m3{transform:rotate(26deg) translateY(-6px)}
+@keyframes mlineFade{0%{opacity:.9;height:22px}100%{opacity:0;height:8px}}
+/* item volador: arco desde el sabor tocado hasta la caja (WAAPI, ver JS) */
+.flyVera{position:fixed;z-index:200;pointer-events:none;filter:drop-shadow(2px 4px 0 rgba(0,0,0,.35));will-change:transform}
+/* Vera junto a la caja: idle bob + reacción al llegar a 5/5 */
+.vera{position:relative;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;padding-bottom:2%}
+.vera__imgs{position:relative;width:clamp(240px,52vw,380px);transform-origin:50% 92%;animation:veraBob 3.2s ease-in-out infinite}
+.vera.full .vera__imgs{animation:veraBob 3.2s ease-in-out infinite,veraCelebrate .7s var(--ease)}
+.vera__img{display:block;width:100%;height:auto;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.35));transition:opacity .24s var(--ease)}
+.vera__img--closed{position:absolute;inset:0;opacity:0}
+/* idle de charme: guino/parpadeo sutil cada ~9s (escala vertical breve), independiente del bob del padre */
+.vera__img--open{animation:veraWink 9s ease-in-out infinite;transform-origin:50% 42%}
+@keyframes veraWink{
+  0%,92%,100%{transform:scaleY(1)}
+  94%{transform:scaleY(.86)}
+  96%{transform:scaleY(1.04)}
+  98%{transform:scaleY(1)}
+}
+.vera.full .vera__img--open{opacity:0}
+.vera.full .vera__img--closed{opacity:1}
+@keyframes veraBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes veraCelebrate{
+  0%{transform:scale(1) rotate(0)}
+  30%{transform:scale(1.2) rotate(-9deg)}
+  55%{transform:scale(.94) rotate(7deg)}
+  75%{transform:scale(1.08) rotate(-3deg)}
+  100%{transform:scale(1) rotate(0)}
+}
+.vera__bubble{position:absolute;top:-1.4rem;left:50%;transform:translateX(-50%) translateY(0) scale(.7);opacity:0;
+  pointer-events:none;transition:opacity .25s var(--ease),transform .25s var(--ease);background:#fff;color:var(--tinta);
+  border:var(--stroke) solid var(--tinta);border-radius:14px;padding:.35rem .75rem;font-weight:700;font-size:.85rem;
+  box-shadow:0 4px 0 var(--tinta);white-space:nowrap;z-index:2}
+.vera__bubble::after{content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+  border:9px solid transparent;border-top-color:#fff}
+.vera.full .vera__bubble{opacity:1;transform:translateX(-50%) translateY(-.6rem) scale(1)}
+/* confeti radial alrededor de Vera al llegar a 5/5 */
+.veraConfetti{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:1}
+.veraConfetti span{position:absolute;top:32%;left:50%;width:8px;height:8px;margin:-4px 0 0 -4px;
+  border-radius:2px;opacity:0}
+.veraConfetti span:nth-child(1){background:var(--verde-luz)}
+.veraConfetti span:nth-child(2){background:var(--rosa)}
+.veraConfetti span:nth-child(3){background:var(--celeste)}
+.veraConfetti span:nth-child(4){background:var(--lila)}
+.veraConfetti span:nth-child(5){background:var(--rojo)}
+.veraConfetti span:nth-child(6){background:var(--verde-luz)}
+.vera.full .veraConfetti span{animation:veraConfettiPop .9s var(--ease) forwards}
+.vera.full .veraConfetti span:nth-child(1){--tx:-46px;--ty:-36px;animation-delay:.05s}
+.vera.full .veraConfetti span:nth-child(2){--tx:-18px;--ty:-62px;animation-delay:.1s}
+.vera.full .veraConfetti span:nth-child(3){--tx:20px;--ty:-58px;animation-delay:.02s}
+.vera.full .veraConfetti span:nth-child(4){--tx:46px;--ty:-28px;animation-delay:.14s}
+.vera.full .veraConfetti span:nth-child(5){--tx:32px;--ty:14px;animation-delay:.08s}
+.vera.full .veraConfetti span:nth-child(6){--tx:-32px;--ty:16px;animation-delay:.16s}
+@keyframes veraConfettiPop{
+  0%{transform:translate(0,0) rotate(0) scale(0);opacity:0}
+  30%{opacity:1}
+  100%{transform:translate(var(--tx),var(--ty)) rotate(140deg) scale(1);opacity:0}
+}
+.hidden{display:none!important}
+@media(max-width:720px){
+  .scene{flex-direction:column;align-items:center;padding-top:2.4rem;gap:.8rem}
+  .carton{width:100%}
+  .vera{padding-bottom:0}
+  .vera__imgs{width:clamp(210px,64vw,300px)}
+}
+/* controles */
+.picker{display:flex;flex-wrap:wrap;gap:.6rem;margin:1rem 0}
+.fbtn{flex:1 1 30%;min-width:120px;font-family:var(--body);font-weight:700;color:var(--tinta);
+  border:var(--stroke) solid var(--tinta);border-radius:14px;padding:.7rem;cursor:pointer;box-shadow:0 4px 0 var(--tinta);
+  transition:transform .1s var(--ease),box-shadow .1s var(--ease),filter .1s var(--ease)}
+.fbtn:active{transform:translateY(3px) scale(.96);box-shadow:0 1px 0 var(--tinta);filter:brightness(1.25) saturate(1.3)}
+.fbtn:disabled{opacity:.5}
+/* flash de color al soltar un sabor en la caja (clase temporal, ver renderPicker) */
+.fbtn--flash{animation:fbtnFlash .38s var(--ease)}
+@keyframes fbtnFlash{0%{filter:brightness(1.65) saturate(1.5);transform:scale(1.1)}100%{filter:none;transform:scale(1)}}
+.builder__bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  background:#fff;color:var(--tinta);border:var(--stroke) solid var(--tinta);border-radius:var(--r);padding:1rem;
+  box-shadow:0 3px 0 var(--verde-luz),0 8px 0 rgba(0,0,0,.25)}
+.builder__meta{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+.counterWrap{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem}
+.counter{font-family:var(--display);font-weight:400;font-size:1.7rem;line-height:1;display:inline-block;
+  background:var(--verde-luz);color:var(--verde-osc);border:2.5px solid var(--tinta);border-radius:999px;
+  padding:.2em .8em;box-shadow:0 3px 0 var(--tinta)}
+.progress{display:flex;gap:.3rem;padding-left:.2rem}
+.progress__dot{width:11px;height:11px;border-radius:50%;border:2px solid var(--tinta);background:#fff;
+  transition:transform .2s var(--ease)}
+.progress__dot.on{transform:scale(1.15)}
+/* el ultimo punto que se llena "pop-ea" (clase temporal, ver renderProgressDots) */
+.progress__dot.pop{animation:dotPop .4s var(--ease)}
+@keyframes dotPop{0%{transform:scale(.3)}55%{transform:scale(1.5)}100%{transform:scale(1.15)}}
+.builder__price{font-family:var(--body);font-weight:800;font-size:1.1rem;color:#fff;background:var(--rojo);
+  border:2.5px solid var(--tinta);border-radius:999px;padding:.3em .85em;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.builder__price:empty{display:none}
+.builder__actions{display:flex;gap:.6rem;align-items:center}
+.cartrow{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.7rem 0;border-bottom:2px dashed #ddd}
+.cartrow__name{font-weight:600;font-size:.95rem}
+.cartrow__ctrl{display:flex;align-items:center;gap:.5rem}
+.qtybtn{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--tinta);background:var(--verde-luz);color:var(--verde-osc);
+  font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 3px 0 var(--tinta);
+  transition:transform .12s var(--ease),box-shadow .12s var(--ease)}
+.qtybtn:active{transform:translateY(3px);box-shadow:0 0 0 var(--tinta)}
+.cart__total{display:flex;align-items:baseline;justify-content:space-between;margin:1rem 0;font-size:1.2rem;font-weight:700}
+.cart__total b{font-family:var(--display);font-weight:400;font-size:1.9rem;color:var(--rojo)}
+.cart__field{display:block;width:100%;margin:.5rem 0;padding:.7rem;border:2.5px solid var(--tinta);border-radius:12px;font-family:inherit}
+/* estados de foco on-brand y unificados en todos los controles interactivos */
+.btn:focus-visible,.fbtn:focus-visible,.linkbtn:focus-visible,.qtybtn:focus-visible,.modal__x:focus-visible,
+.cartbtn:focus-visible,.lang button:focus-visible,.cart__field:focus-visible,.mcard__foot .btn:focus-visible{
+  outline:3px solid var(--verde-luz);outline-offset:3px;border-radius:inherit}
+.cartbtn.bump{animation:bump .3s var(--ease)}
+@keyframes bump{0%,100%{transform:none}30%{transform:scale(1.25)}}
+.how{background:var(--rosa);border-top:var(--stroke) solid var(--tinta);border-bottom:var(--stroke) solid var(--tinta)}
+.how .wrap{padding:2.2rem 0 2.6rem}
+.how__row{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:.4rem}
+/* tarjeta-sticker por paso: icono dibujado + numero + texto, ligera rotacion que se endereza al hover */
+.how__step{position:relative;background:#fff;border:var(--stroke) solid var(--tinta);border-radius:20px;
+  box-shadow:0 6px 0 var(--tinta);padding:1.3rem 1rem 1.1rem;display:flex;flex-direction:column;
+  align-items:center;text-align:center;gap:.5rem;transform:rotate(var(--rot,0));
+  transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
+.how__step:hover{transform:rotate(0deg) translateY(-5px);box-shadow:0 11px 0 var(--tinta)}
+.how__icon{width:56px;height:56px;display:block}
+.how__icon svg{width:100%;height:100%;display:block}
+.how__num{font-family:var(--display);font-weight:400;font-size:1.05rem;background:var(--rojo);color:#fff;
+  width:28px;height:28px;border-radius:50%;display:grid;place-content:center;border:2.5px solid var(--tinta)}
+.how__text{font-weight:600;font-size:.92rem}
+.how__connector{width:44px;height:20px;display:block;justify-self:center;align-self:center}
+@media(max-width:640px){
+  .how__row{grid-template-columns:1fr;gap:.9rem}
+  .how__connector{transform:rotate(90deg);width:26px;height:46px;margin:-.4rem auto}
+}
+/* movil: mismo tileado ordenado a tamano real que desktop (sin cover, para que no pixele) */
+.footer{background:var(--verde-osc);color:var(--verde-luz);padding:2rem 0}
+.footer__legal{font-weight:300;font-size:.75rem;opacity:.9;line-height:1.5;margin:0;text-align:center}
+/* estado vacío del carrito y feedback de "añadido": aparece Vera */
+.cart-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.4rem;padding:.5rem 0 .2rem}
+.cart-empty img{width:104px;height:104px;object-fit:contain}
+.cart-empty p{margin:0;font-size:.95rem}
+.toast{position:fixed;left:50%;bottom:1.2rem;transform:translate(-50%,140%);z-index:120;display:flex;align-items:center;gap:.6rem;
+  background:var(--verde-osc);color:#fff;border:var(--stroke) solid var(--tinta);border-radius:999px;padding:.4rem .9rem .4rem .4rem;
+  box-shadow:0 6px 0 rgba(0,0,0,.35);transition:transform .28s var(--ease);max-width:92vw}
+.toast.show{transform:translate(-50%,0)}
+.toast img{width:40px;height:40px;object-fit:contain;flex:none}
+.toast span{font-weight:600;font-size:.88rem;line-height:1.2}
+@media(max-width:520px){
+  .fbtn{flex:1 1 45%}
+  .builder__bar{gap:.7rem}
+  .builder__meta{width:100%;justify-content:space-between}
+  .builder__actions{width:100%;flex-direction:column;align-items:stretch}
+  .builder__actions .btn{flex:none;width:100%}
+}
+/* reveal-on-scroll: fade + slide up al entrar en viewport (ver IntersectionObserver en JS) */
+.reveal{opacity:0;transform:translateY(26px);
+  transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:translateY(0)}
+.menu .mcard.reveal{transition-timing-function:cubic-bezier(.34,1.56,.64,1)}
+.menu .mcard:nth-child(1){transition-delay:.02s}
+.menu .mcard:nth-child(2){transition-delay:.09s}
+.menu .mcard:nth-child(3){transition-delay:.16s}
+.menu .mcard:nth-child(4){transition-delay:.23s}
+.menu .mcard:nth-child(5){transition-delay:.30s}
+.menu .mcard:nth-child(6){transition-delay:.37s}
+.how__step:nth-child(1){transition-delay:0s}
+.how__step:nth-child(3){transition-delay:.08s}
+.how__step:nth-child(5){transition-delay:.16s}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none;transition:none}
+  .topflow__bg{transform:none!important}
+}
+@media(prefers-reduced-motion:reduce){ *{animation-duration:.001ms!important;transition:none!important} }
+</style>
+</head>
+<body>
+<header class="hdr" id="hdr">
+  <div class="wrap hdr__in">
+    <a class="brand" href="#top" id="brandLink" aria-label="Verana">
+      <img class="brand__logo" src="verana-assets/logo/LOGO-33.svg" width="600" height="394" alt="Verana">
+    </a>
+    <nav class="hdr__nav">
+      <a href="#menu" id="navMenu">Menú</a>
+      <a href="#how" id="navHow">Cómo funciona</a>
+    </nav>
+    <div class="hdr__right">
+      <div class="lang" id="lang"><button data-lang="es">ES</button><button data-lang="en">EN</button></div>
+      <button class="cartbtn empty" id="cartBtn" aria-label="Carrito">🛒<span class="cartbtn__n" id="cartN">0</span></button>
+    </div>
+  </div>
+</header>
+<main id="app">
+  <div class="topflow" id="topFlow">
+    <div class="topflow__bg" id="topFlowBg" aria-hidden="true"></div>
+    <section class="hero" id="hero">
+      <div class="hero__glow" aria-hidden="true"></div>
+      <span class="hero__spark s1" aria-hidden="true"></span>
+      <span class="hero__spark s2" aria-hidden="true"></span>
+      <span class="hero__spark s3" aria-hidden="true"></span>
+      <div class="wrap hero__in" id="heroIn">
+        <img class="hero__logo" src="verana-assets/logo/LOGO-33.svg" width="600" height="394" alt="Verana">
+        <img class="hero__vera" src="verana-assets/mascot/vera-verde-standing.png" width="360" height="560" alt="" aria-hidden="true">
+      </div>
+      <div class="wrap hero__natural" id="heroNatural">
+        <div class="hero__natural-row">
+          <span class="hero__natural-big" id="heroNaturalBig"></span>
+          <span class="hero__natural-dot" aria-hidden="true">·</span>
+          <span class="hero__natural-big" id="heroNaturalBig2"></span>
+        </div>
+        <span class="hero__natural-sub" id="heroNaturalSub"></span>
+      </div>
+      <div class="hero__cta"><a class="btn" href="#builder"><span id="heroCta"></span></a></div>
+    </section>
+    <section class="builder" id="builder">
+    <div class="wrap">
+      <div class="builder__head">
+        <span class="kicker" id="builderKicker">Verana</span>
+        <h2 id="builderTitle">Arma tu caja de 5</h2>
+        <p class="builder__hint" id="builderHint">Toca un sabor y llénala.</p>
+      </div>
+      <div class="stage" id="stage">
+        <div class="scene">
+          <div class="vera" id="veraMascot">
+            <div class="vera__bubble" id="veraBubble"><span id="veraBubbleText"></span></div>
+            <div class="veraConfetti" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="vera__imgs">
+              <img class="vera__img vera__img--open" src="verana-assets/mascot/vera-box.webp" alt="" aria-hidden="true">
+              <img class="vera__img vera__img--closed" src="verana-assets/mascot/vera-box-closed.webp" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <div class="box2d" id="box2d" aria-label="Tu caja"></div>
+        </div>
+      </div>
+      <div class="picker" id="picker"></div>
+      <div class="builder__bar">
+        <div class="builder__meta">
+          <div class="counterWrap">
+            <span class="counter" id="counter">0/5</span>
+            <div class="progress" id="progress"></div>
+          </div>
+          <span class="builder__price" id="builderPrice"></span>
+        </div>
+        <div class="builder__actions">
+          <button class="btn ghost" id="btnPreset" type="button">Uno por día</button>
+          <button class="btn ghost" id="btnClear" type="button">Vaciar</button>
+          <button class="btn alt" id="btnAddBox" type="button" disabled>Añadir caja</button>
+        </div>
+      </div>
+    </div>
+    </section>
+  </div>
+  <div class="divider divider--toMenu" aria-hidden="true"><svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+    <path d="M0,20 C100,45 200,0 300,18 C400,36 500,5 600,22 C700,39 800,3 900,20 C1000,37 1100,8 1200,20 L1200,60 L0,60 Z" fill="#fbf4e6"/>
+    <path d="M0,20 C100,45 200,0 300,18 C400,36 500,5 600,22 C700,39 800,3 900,20 C1000,37 1100,8 1200,20" fill="none" stroke="#111111" stroke-width="3"/>
+  </svg></div>
+  <section class="sec menu-sec" id="menu">
+    <div class="wrap">
+      <div class="sec__head reveal" id="menuHead">
+        <img class="menu__peek" src="verana-assets/mascot/vera-mini-verde.png" alt="" aria-hidden="true">
+        <h2 id="menuTitle">El menú</h2>
+      </div>
+      <div class="menu" id="menuGrid"></div>
+    </div>
+  </section>
+  <div class="divider divider--toHow" aria-hidden="true"><svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+    <path d="M0,20 C100,45 200,0 300,18 C400,36 500,5 600,22 C700,39 800,3 900,20 C1000,37 1100,8 1200,20 L1200,60 L0,60 Z" fill="#ffabbd"/>
+    <path d="M0,20 C100,45 200,0 300,18 C400,36 500,5 600,22 C700,39 800,3 900,20 C1000,37 1100,8 1200,20" fill="none" stroke="#111111" stroke-width="3"/>
+  </svg></div>
+  <section class="how" id="how">
+    <div class="wrap">
+      <div class="sec__head reveal" id="howHead"><h2 id="howTitle">Cómo funciona</h2></div>
+      <div class="how__row">
+        <div class="how__step reveal" style="--rot:-1.6deg">
+          <span class="how__icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M20 24 L18 55 Q18 59 22 59 L42 59 Q46 59 46 55 L44 24 Z" fill="var(--verde-luz)" stroke="var(--tinta)" stroke-width="3" stroke-linejoin="round"/><path d="M24 24 L24 17 Q24 11 32 11 Q40 11 40 17 L40 24" fill="none" stroke="var(--tinta)" stroke-width="3" stroke-linecap="round"/><line x1="25" y1="35" x2="39" y2="35" stroke="var(--tinta)" stroke-width="2.5" stroke-linecap="round"/><line x1="25" y1="43" x2="39" y2="43" stroke="var(--tinta)" stroke-width="2.5" stroke-linecap="round"/></svg></span>
+          <span class="how__num">1</span>
+          <span class="how__text" id="how1">Saca tu bolsita.</span>
+        </div>
+        <span class="how__connector" aria-hidden="true"><svg viewBox="0 0 60 24"><path d="M2 12 H50" stroke="var(--tinta)" stroke-width="3" stroke-dasharray="1 9" stroke-linecap="round"/><path d="M42 4 L54 12 L42 20" fill="none" stroke="var(--tinta)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="how__step reveal" style="--rot:1.2deg">
+          <span class="how__icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M26 8 h12 v7 l4 7 v33 q0 6 -6 6 h-8 q-6 0 -6 -6 V22 l4 -7 Z" fill="var(--celeste)" stroke="var(--tinta)" stroke-width="3" stroke-linejoin="round"/><rect x="26" y="8" width="12" height="6" rx="1" fill="#fff" stroke="var(--tinta)" stroke-width="2.5"/><path d="M32 32 q7 8 0 15 q-7 -7 0 -15 Z" fill="#fff" stroke="var(--tinta)" stroke-width="2"/></svg></span>
+          <span class="how__num">2</span>
+          <span class="how__text" id="how2">3 panelas + agua.</span>
+        </div>
+        <span class="how__connector" aria-hidden="true"><svg viewBox="0 0 60 24"><path d="M2 12 H50" stroke="var(--tinta)" stroke-width="3" stroke-dasharray="1 9" stroke-linecap="round"/><path d="M42 4 L54 12 L42 20" fill="none" stroke="var(--tinta)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="how__step reveal" style="--rot:-1deg">
+          <span class="how__icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M22 20 h20 l-3 30 q-1 7 -7 7 q-6 0 -7 -7 Z" fill="var(--rosa)" stroke="var(--tinta)" stroke-width="3" stroke-linejoin="round"/><path d="M14 15 q4 -9 11 -3" fill="none" stroke="var(--tinta)" stroke-width="2.5" stroke-linecap="round"/><path d="M50 15 q-4 -9 -11 -3" fill="none" stroke="var(--tinta)" stroke-width="2.5" stroke-linecap="round"/><path d="M17 10 q-3 -5 3 -8" fill="none" stroke="var(--tinta)" stroke-width="2" stroke-linecap="round"/></svg></span>
+          <span class="how__num">3</span>
+          <span class="how__text" id="how3">Agita y bebe.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="divider divider--toFooter" aria-hidden="true"><svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+    <path d="M0,20 C100,45 200,0 300,18 C400,36 500,5 600,22 C700,39 800,3 900,20 C1000,37 1100,8 1200,20 L1200,60 L0,60 Z" fill="#005200"/>
+    <path d="M0,20 C100,45 200,0 300,18 C400,36 500,5 600,22 C700,39 800,3 900,20 C1000,37 1100,8 1200,20" fill="none" stroke="#111111" stroke-width="3"/>
+  </svg></div>
+</main>
+<footer class="footer"><div class="wrap reveal"><p class="footer__legal" id="footerLegal"></p></div></footer>
+<div class="modal" id="detailModal" hidden>
+  <div class="modal__panel" role="dialog" aria-modal="true">
+    <div class="modal__head"><h3 id="detailName"></h3><button class="modal__x" data-close-detail aria-label="Cerrar">✕</button></div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+<div class="modal" id="cartModal" hidden>
+  <div class="modal__panel" role="dialog" aria-modal="true">
+    <div class="modal__head"><h3 id="cartTitle">Tu pedido</h3><button class="modal__x" data-close-cart aria-label="Cerrar">✕</button></div>
+    <div id="cartBody"></div>
+    <div class="cart__total"><span id="cartTotalLabel">Total</span> <b id="cartTotalVal">0,00€</b></div>
+    <input class="cart__field" id="cartName" type="text" placeholder="Tu nombre (opcional)">
+    <input class="cart__field" id="cartDay" type="text" placeholder="Día de entrega (opcional)">
+    <a class="btn alt" id="cartOrder" href="#" target="_blank" rel="noopener" style="width:100%;justify-content:center">Pedir por WhatsApp</a>
+  </div>
+</div>
+<div class="toast" id="addedToast" aria-live="polite">
+  <img src="verana-assets/mascot/vera-verde.png" alt="">
+  <span id="addedToastText"></span>
+</div>
+<script type="module">
+const CONFIG = {
+  PANELAS_POR_BOLSA: 3,        // 3 panelas = 1 bolsa = 1 smoothie
+  BOX_SIZE: 5,                 // bolsitas por caja
+  PRICE: { packUnit: 3.75, single: 4.90 },  // referencia, editable
+  WA_NUMBER: '35699653967',
+};
+
+// Espejo de verana-panelas.xlsx (VR-01..VR-05). claim:'efsa' cita textual; claim:'ing' solo describe ingrediente.
+// color/accent = mapeo sabor->colorway oficial (docs/verana-brand-tokens.md): color es el principal
+// (fondo de chip, bolsita 3D), accent es el tono oscuro/contorno emparejado del mismo colorway.
+const FLAVORS = [
+  { id:'gl', color:'#ffabbd', accent:'#d2002b', mini:'verana-assets/mascot/vera-mini-rosa.png', name:{es:'GLOW', en:'GLOW'},
+    benefit:{es:'Piel y antioxidantes', en:'Skin and antioxidants'},
+    actives:{es:['Vitamina C','Chía','Antocianinas'], en:['Vitamin C','Chia','Anthocyanins']},
+    claim:'efsa',
+    claimText:{es:'La vitamina C contribuye a la formación normal de colágeno.',
+               en:'Vitamin C contributes to normal collagen formation.'},
+    ingredients:{es:'Fresa, mango, jugo de naranja, chía.', en:'Strawberry, mango, orange juice, chia.'} },
+  { id:'li', color:'#00e37a', accent:'#005200', mini:'verana-assets/mascot/vera-mini-verde.png', name:{es:'LIGEREZA', en:'LIGHT'},
+    benefit:{es:'Digestión y ligereza', en:'Digestion and lightness'},
+    actives:{es:['Bromelina','Vitamina C'], en:['Bromelain','Vitamin C']},
+    claim:'ing',
+    claimText:{es:'', en:''},
+    ingredients:{es:'Piña, pepino, apio, limón, menta.', en:'Pineapple, cucumber, celery, lemon, mint.'} },
+  { id:'pr', color:'#dcabff', accent:'#560072', mini:'verana-assets/mascot/vera-mini-lila.png', name:{es:'PROTEÍNICO', en:'PROTEIN'},
+    benefit:{es:'Saciedad y recuperación', en:'Satiety and recovery'},
+    actives:{es:['30 g proteína','Betaglucano de avena'], en:['30 g protein','Oat beta-glucan']},
+    claim:'efsa',
+    claimText:{es:'La proteína contribuye al mantenimiento de la masa muscular.',
+               en:'Protein contributes to the maintenance of muscle mass.'},
+    ingredients:{es:'Proteína en polvo, plátano, avena, canela.', en:'Protein powder, banana, oats, cinnamon.'} },
+  { id:'pe', color:'#86e7ff', accent:'#04006f', mini:'verana-assets/mascot/vera-mini-celeste.png', name:{es:'PESO', en:'BALANCE'},
+    benefit:{es:'Control de apetito', en:'Appetite control'},
+    actives:{es:['Fibra de chía','Omega-3 ALA'], en:['Chia fiber','Omega-3 ALA']},
+    claim:'ing',
+    claimText:{es:'', en:''},
+    ingredients:{es:'Manzana verde, pepino, chía, limón.', en:'Green apple, cucumber, chia, lemon.'} },
+  { id:'en', color:'#d2002b', accent:'#ffabbd', mini:'verana-assets/mascot/vera-mini-rojo.png', name:{es:'ENERGÍA', en:'ENERGY'},
+    benefit:{es:'Rendimiento y energía', en:'Performance and energy'},
+    actives:{es:['Cafeína','Magnesio del cacao'], en:['Caffeine','Cacao magnesium']},
+    claim:'efsa',
+    claimText:{es:'La cafeína contribuye a aumentar el rendimiento físico en ejercicio de corta duración y alta intensidad.',
+               en:'Caffeine contributes to an increase in physical performance during short-term high-intensity exercise.'},
+    ingredients:{es:'Plátano, cacao, café concentrado, canela.', en:'Banana, cacao, concentrated coffee, cinnamon.'} },
+];
+const FLAVOR_BY_ID = Object.fromEntries(FLAVORS.map(f => [f.id, f]));
+const PACK_PRICE = CONFIG.PRICE.packUnit * CONFIG.BOX_SIZE; // caja de 5
+// prefers-reduced-motion: sin vuelo ni burst, colocación instantánea
+const REDUCED_MOTION = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+let LANG_PREF;
+try { LANG_PREF = localStorage.getItem('verana_lang') || (navigator.language||'es'); }
+catch(e){ LANG_PREF = (navigator.language||'es'); }
+let LANG = LANG_PREF.toLowerCase().startsWith('es') ? 'es' : 'en';
+const I18N = {
+  es:{
+    brand_tag:'Arma tu semana',
+    nav_menu:'Menú', nav_how:'Cómo funciona',
+    hero_desc:'Echas 3 panelas en tu botella con agua, agitas un minuto y listo. Un <span class="hl">smoothie fresco</span> en cualquier lugar.',
+    hero_cta:'Arma tu caja',
+    hero_natural_big:'100% natural', hero_natural_big2:'0 azúcar añadido', hero_natural_sub:'sin conservantes, colorantes ni cosas raras',
+    builder_title:'Arma tu caja de 5',
+    builder_hint:'Toca un sabor y llénala. Uno por día, como quieras.',
+    counter:(n)=>`${n}/${CONFIG.BOX_SIZE}`,
+    add_box:'Añadir caja al pedido',
+    box_full_hint:'¡Caja lista! Añádela al pedido.',
+    clear:'Vaciar',
+    preset:'Uno por día',
+    menu_title:'El menú',
+    per_bag:'bolsita',
+    add_bag:'+ bolsita',
+    view_detail:'Ver ficha',
+    detail_ingredients:'Ingredientes',
+    detail_actives:'Activos',
+    detail_prep:'Preparación',
+    prep_text:`${CONFIG.PANELAS_POR_BOLSA} panelas en tu botella con agua, agita 15-20 s y bebe.`,
+    how_title:'Cómo funciona',
+    how1:'Saca tu bolsita del congelador.',
+    how2:`${CONFIG.PANELAS_POR_BOLSA} panelas + agua en tu botella.`,
+    how3:'Agita un minuto y bebe, fresco donde sea.',
+    cart_title:'Tu pedido',
+    cart_empty:'Tu carrito está vacío. Arma tu caja de 5.',
+    cart_total:'Total',
+    cart_name:'Tu nombre (opcional)',
+    cart_day:'Día de entrega (opcional)',
+    cart_order:'Pedir por WhatsApp',
+    added_toast:'¡Añadido a tu pedido!',
+    box_line:'Caja de 5',
+    footer_legal:'Los smoothies Verana son alimentos, no medicamentos, y no sustituyen una dieta variada y equilibrada. Las referencias a beneficios describen ingredientes. Hecho en Malta.',
+    wa_hello:'¡Hola Verana! Quiero pedir:',
+    wa_total:'Total',
+    wa_name:'Nombre',
+    wa_day:'Entrega',
+    vera_ready:'¡Listo!',
+    aria_cart:'Carrito',
+    aria_close:'Cerrar',
+  },
+  en:{
+    brand_tag:'Build your week',
+    nav_menu:'Menu', nav_how:'How it works',
+    hero_desc:'Drop 3 pucks in your bottle with water, shake for a minute and done. A <span class="hl">fresh smoothie</span> anywhere.',
+    hero_cta:'Build your box',
+    hero_natural_big:'100% natural', hero_natural_big2:'0 added sugar', hero_natural_sub:'no preservatives, dyes or weird stuff',
+    builder_title:'Build your box of 5',
+    builder_hint:'Tap a flavor and fill it. One a day, your way.',
+    counter:(n)=>`${n}/${CONFIG.BOX_SIZE}`,
+    add_box:'Add box to order',
+    box_full_hint:'Box ready! Add it to your order.',
+    clear:'Clear',
+    preset:'One a day',
+    menu_title:'The menu',
+    per_bag:'bag',
+    add_bag:'+ bag',
+    view_detail:'View sheet',
+    detail_ingredients:'Ingredients',
+    detail_actives:'Actives',
+    detail_prep:'How to prepare',
+    prep_text:`${CONFIG.PANELAS_POR_BOLSA} pucks in your bottle with water, shake 15-20 s and drink.`,
+    how_title:'How it works',
+    how1:'Take a bag from the freezer.',
+    how2:`${CONFIG.PANELAS_POR_BOLSA} pucks + water in your bottle.`,
+    how3:'Shake one minute and drink, fresh anywhere.',
+    cart_title:'Your order',
+    cart_empty:'Your cart is empty. Build your box of 5.',
+    cart_total:'Total',
+    cart_name:'Your name (optional)',
+    cart_day:'Delivery day (optional)',
+    cart_order:'Order on WhatsApp',
+    added_toast:'Added to your order!',
+    box_line:'Box of 5',
+    footer_legal:'Verana smoothies are foods, not medicines, and do not replace a varied, balanced diet. Benefit references describe ingredients. Made in Malta.',
+    wa_hello:'Hi Verana! I would like to order:',
+    wa_total:'Total',
+    wa_name:'Name',
+    wa_day:'Delivery',
+    vera_ready:'Ready!',
+    aria_cart:'Cart',
+    aria_close:'Close',
+  },
+};
+const t = (k) => I18N[LANG][k];
+const nameOf = (f) => f.name[LANG];
+const fmt = (n) => LANG==='en' ? '€'+n.toFixed(2) : n.toFixed(2).replace('.',',')+'€';
+// Tinta legible sobre un color de sabor: blanco en fondos oscuros, negro en claros.
+function inkOn(hex){
+  const h = hex.replace('#','');
+  const r = parseInt(h.slice(0,2),16)/255, g = parseInt(h.slice(2,4),16)/255, b = parseInt(h.slice(4,6),16)/255;
+  const L = 0.2126*r + 0.7152*g + 0.0722*b; // luminancia relativa aproximada
+  return L < 0.55 ? '#fff' : '#111';
+}
+// Isotipo "V" (silueta única, verana-assets/logo/LOGO-34.svg) para el chip de sabor del menú.
+const ISOTIPO_VB = '0 0 735.31 661.39';
+const ISOTIPO_D = 'M534.78,231.84c-.66-7.58-1.57-15.25-4.16-22.44-2.45-6.8-5.42-13.72-9.4-19.78-3.84-5.84-8.36-11.78-13.7-16.35-5.54-4.75-11.43-9.38-18.05-12.52-6.81-3.23-14.01-6.15-21.26-8.26-7.36-2.14-15-3.32-22.62-4.05-7.81-.75-15.38-.32-23.14.75-6.88.95-13.52,2.43-20.01,4.95-7.39,2.87-14.74,6.11-21.27,10.65-3.38,2.35-6.65,4.91-9.73,7.65-.56.5-1.1,1.04-1.62,1.57-5.37-4.75-11.25-8.96-17.49-12.41-4.75-2.63-9.77-4.84-14.88-6.68-4.98-1.79-10.04-2.81-15.27-3.56-6.21-.89-12.43-1.76-18.71-1.08-6.28.68-12.87.85-18.96,2.59-5.71,1.64-11.46,4.21-16.59,7.22-5.04,2.96-9.65,6.77-14.11,10.53-16.37,13.77-29.62,32.15-36.69,52.4-7.41,21.23-7.04,44.81-2.61,66.61,4.18,20.61,12.33,40.36,22.71,58.66-.89.35-1.78.7-2.67,1.09-4.17,1.81-7.79,4.29-11.39,7.05-2.19,1.67-4.37,3.36-6.29,5.35-2.07,2.16-3.85,4.59-5.62,7-3.22,4.37-5.48,8.96-7.44,14.02-3.83,9.86-4.11,20.18-2.51,30.52.81,5.26,2.51,9.94,4.61,14.82,2.06,4.8,4.98,8.71,8.21,12.8,5.29,6.69,12.07,11.93,19.64,15.71.99,5.85,2.89,11.43,5.78,16.74,3.6,6.64,8.69,11.57,14.59,16.13,12.39,9.57,30.08,12.73,45.06,8.24,5.74-1.72,11.36-4.36,16.3-7.88,4.26,3.47,8.74,6.7,13.43,9.45,3.58,2.1,7.37,3.77,11.19,5.39,4.35,1.84,8.71,3.65,13.28,4.87,4.66,1.24,9.43,1.92,14.21,2.54,4.26.55,8.53,1.06,12.83,1.17,9.22.24,18.63-.88,27.63-2.78,16.65-3.52,32.87-12.6,44.67-24.86,11.95-12.42,20.47-27.53,25.89-43.82,1.49-4.49,2.48-9.1,3.19-13.77.82-5.32,1.6-10.71,1.92-16.09.43-7.04-.06-14.05-.85-21.04,0-.29,0-.58-.03-.88-.28-2.64-.3-5.28-.15-7.93.08-1.28,0-2.88.34-4.14-.09.52-.23,1.61,0,.14.14-.92.3-1.82.51-2.72.26-1.08.49-2.13.65-3.22.11-.82.22-1.64.33-2.46.03-.25.05-.43.06-.54.12-.45.28-.9.33-1.16.57-2.62,1.2-5.24,1.89-7.83,1.44-5.43,3.14-10.79,5.09-16.06.39-1.06.73-2.25,1.24-3.27.13-.24.25-.48.3-.58.3-.65.61-1.29.92-1.94,1.14-2.36,2.34-4.7,3.6-7,2.67-4.88,5.96-9.32,8.8-14.09,2.73-4.6,4.75-9.77,7.07-14.59,5.06-10.54,10.07-21.14,14.22-32.08,2.19-5.76,4.06-11.64,5.09-17.72,1.16-6.88,2.19-14.04,1.65-21.03ZM484.46,370.17c-.05-.21.02-.57.11-.94-.02.17-.06.48-.11.94Z';
+function veraBubbleIcon(fill){
+  return `<svg viewBox="${ISOTIPO_VB}" aria-hidden="true" focusable="false"><path fill="${fill}" d="${ISOTIPO_D}"/></svg>`;
+}
+
+// ---- Estado: la caja en construcción es la fuente de verdad ----
+let box = [];            // array de ids de sabor, máx CONFIG.BOX_SIZE
+let cart = {};           // box: {kind:'box', ids:[...], price, qty} · single: {kind:'single', flavorId, price, qty}
+try { cart = JSON.parse(localStorage.getItem('verana_cart')) || {}; } catch(e){ cart = {}; }
+
+// índices en vuelo (se pintan como vacíos) / en animación de poof al salir
+let flightPending = new Set();
+let poofing = new Set();
+
+const boxCount = () => box.length;
+const boxFull  = () => box.length >= CONFIG.BOX_SIZE;
+const boxLivePrice = () => box.length * CONFIG.PRICE.packUnit;
+
+function addToBox(id){
+  if (boxFull() || !FLAVOR_BY_ID[id]) return false;
+  box.push(id); return true;
+}
+function removeFromBoxAt(index){
+  if (index<0 || index>=box.length) return false;
+  box.splice(index,1); return true;
+}
+function clearBox(){ box = []; flightPending.clear(); poofing.clear(); }
+function presetOnePerDay(){ box = FLAVORS.map(f => f.id).slice(0, CONFIG.BOX_SIZE); }
+
+// Composición legible y firma estable para agrupar cajas idénticas en el carrito.
+function boxComposition(ids){
+  const counts = {};
+  ids.forEach(id => { counts[id] = (counts[id]||0)+1; });
+  const order = FLAVORS.map(f=>f.id).filter(id=>counts[id]);
+  return {
+    label: order.map(id => `${counts[id]} ${FLAVOR_BY_ID[id].name[LANG]}`).join(', '),
+    sig: order.map(id => `${id}${counts[id]}`).join('-'),
+  };
+}
+
+const cartCount = () => Object.values(cart).reduce((s,i)=>s+i.qty,0);
+const cartTotal = () => Object.values(cart).reduce((s,i)=>s+i.price*i.qty,0);
+function saveCart(){ try{ localStorage.setItem('verana_cart', JSON.stringify(cart)); }catch(e){} }
+
+function addBoxToCart(){
+  if (!boxFull()) return false;
+  const { sig } = boxComposition(box);
+  const lineId = 'box-'+sig;
+  if (!cart[lineId]) cart[lineId] = { kind:'box', ids:[...box], price:PACK_PRICE, qty:0 };
+  cart[lineId].qty++;
+  saveCart(); return true;
+}
+function addSingle(flavorId){
+  const f = FLAVOR_BY_ID[flavorId]; if(!f) return false;
+  const lineId = 'single-'+flavorId;
+  if (!cart[lineId]) cart[lineId] = { kind:'single', flavorId, price:CONFIG.PRICE.single, qty:0 };
+  cart[lineId].qty++;
+  saveCart(); return true;
+}
+// Etiqueta de línea construida en tiempo de render (se re-localiza al cambiar idioma).
+function cartLineLabel(line){
+  if(line.kind==='box' && line.ids) return `${t('box_line')} · ${boxComposition(line.ids).label}`;
+  if(line.kind==='single' && FLAVOR_BY_ID[line.flavorId]) return `${nameOf(FLAVOR_BY_ID[line.flavorId])} · ${t('per_bag')}`;
+  return line.name || ''; // línea heredada de un carrito guardado antes de este cambio
+}
+function setLineQty(lineId, delta){
+  if(!cart[lineId]) return;
+  cart[lineId].qty += delta;
+  if (cart[lineId].qty <= 0) delete cart[lineId];
+  saveCart();
+}
+function waMessage(name, day){
+  const items = Object.values(cart); if(!items.length) return '';
+  let m = t('wa_hello') + '\n\n';
+  items.forEach(i => { m += `• ${i.qty} x ${cartLineLabel(i)} — ${fmt(i.price*i.qty)}\n`; });
+  m += `\n${t('wa_total')}: ${fmt(cartTotal())}`;
+  if (name) m += `\n${t('wa_name')}: ${name}`;
+  if (day)  m += `\n${t('wa_day')}: ${day}`;
+  return m;
+}
+function waLink(name, day){
+  return `https://wa.me/${CONFIG.WA_NUMBER}?text=${encodeURIComponent(waMessage(name,day))}`;
+}
+
+const $ = (s) => document.querySelector(s);
+
+function applyLang(l){
+  LANG = l; try{ localStorage.setItem('verana_lang', l); }catch(e){} document.documentElement.lang = l;
+  $('#navMenu').textContent = t('nav_menu'); $('#navHow').textContent = t('nav_how');
+  document.querySelectorAll('#lang button').forEach(b => b.classList.toggle('on', b.dataset.lang===l));
+  renderAll();
+}
+function renderCartBadge(){
+  const n = cartCount();
+  $('#cartN').textContent = n;
+  $('#cartBtn').classList.toggle('empty', n===0);
+}
+function menuCardHTML(f){
+  return `<article class="mcard reveal" data-detail="${f.id}" style="--fc:${f.color};--fa:${f.accent};--fk:${inkOn(f.color)}">
+    <div class="mcard__ribbon">
+      <span class="mcard__iso" aria-hidden="true">${veraBubbleIcon('var(--fk)')}</span>
+      <span class="mcard__name">${nameOf(f)}</span>
+      <img class="mcard__mini" src="${f.mini}" alt="">
+    </div>
+    <div class="mcard__body">
+      <div class="mcard__benefit">${f.benefit[LANG]}</div>
+      <div class="chips">${f.actives[LANG].map(a=>`<span class="chip">${a}</span>`).join('')}</div>
+    </div>
+    <div class="mcard__foot">
+      <span class="mcard__price">${fmt(CONFIG.PRICE.single)}<small> · ${t('per_bag')}</small></span>
+      <div class="mcard__footbtns">
+        <button class="linkbtn" data-detail="${f.id}">${t('view_detail')}</button>
+        <button class="btn" data-addsingle="${f.id}">${t('add_bag')}</button>
+      </div>
+    </div>
+  </article>`;
+}
+function renderMenu(){
+  $('#menuTitle').textContent = t('menu_title');
+  $('#menuGrid').innerHTML = FLAVORS.map(menuCardHTML).join('');
+}
+function openDetail(id){
+  const f = FLAVOR_BY_ID[id]; if(!f) return;
+  $('#detailName').textContent = nameOf(f);
+  const claimHTML = (f.claim==='efsa' && f.claimText[LANG])
+    ? `<div class="detail__claim">${f.claimText[LANG]}</div>` : '';
+  $('#detailBody').innerHTML = `
+    ${claimHTML}
+    <div class="detail__block"><h4>${t('detail_ingredients')}</h4><p>${f.ingredients[LANG]}</p></div>
+    <div class="detail__block"><h4>${t('detail_actives')}</h4>
+      <div class="chips">${f.actives[LANG].map(a=>`<span class="chip">${a}</span>`).join('')}</div></div>
+    <div class="detail__block"><h4>${t('detail_prep')}</h4><p>${t('prep_text')}</p></div>
+    <button class="btn alt" data-addsingle="${f.id}">${t('add_bag')} · ${fmt(CONFIG.PRICE.single)}</button>`;
+  $('#detailModal').hidden = false; document.body.style.overflow='hidden';
+  $('#detailModal').querySelector('[data-close-detail]').focus();
+}
+function closeDetail(){ $('#detailModal').hidden = true; document.body.style.overflow=''; }
+
+// Mini Vera (item que va dentro de la caja): burst de llegada (anillo + chispas + lineas).
+// Tintado por colorway del sabor (f.color/f.accent), no re-dibuja la piña (usa el PNG real).
+function burstFX(f){
+  return `<div class="burst" style="--fc:${f.color};--fa:${f.accent}">
+    <span class="burstRing"></span>
+    <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
+    <span class="spark s4"></span><span class="spark s5"></span><span class="spark s6"></span>
+    <span class="mline m1"></span><span class="mline m2"></span><span class="mline m3"></span>
+  </div>`;
+}
+
+let pendingAnimate = null; // índices de slot a animar con "land" (pop+burst) en el próximo renderBox2D
+let lastAddedFlavor = null, lastAddedAt = 0; // para el flash de color del boton de sabor recien tocado
+
+function renderPicker(){
+  const flashId = (!REDUCED_MOTION && lastAddedFlavor && (Date.now()-lastAddedAt) < 480) ? lastAddedFlavor : null;
+  $('#picker').innerHTML = FLAVORS.map(f =>
+    `<button class="fbtn${f.id===flashId?' fbtn--flash':''}" data-add="${f.id}" style="background:${f.color};color:${inkOn(f.color)};border-color:${f.accent}">${nameOf(f)}</button>`
+  ).join('');
+}
+function renderBox2D(animateIndices){
+  const animate = new Set(animateIndices || []);
+  const slots = Array.from({length: CONFIG.BOX_SIZE}, (_,i)=>{
+    const waiting = flightPending.has(i); // en vuelo: se pinta vacía hasta que aterrice
+    const id = waiting ? undefined : box[i];
+    if(id){
+      const f = FLAVOR_BY_ID[id];
+      const land = animate.has(i) ? ' land' : '';
+      return `<div class="slot filled${land}" data-remove="${i}" title="${nameOf(f)}">
+        <div class="slotItem"><img class="miniVera" src="${f.mini}" alt=""></div>
+        ${land ? burstFX(f) : ''}
+        <span class="poofPuff p1"></span><span class="poofPuff p2"></span><span class="poofPuff p3"></span>
+      </div>`;
+    }
+    return `<div class="slot${waiting ? ' waiting' : ''}"></div>`;
+  }).join('');
+  $('#box2d').innerHTML = slots;
+}
+function renderVera(){
+  const full = boxFull();
+  $('#veraMascot').classList.toggle('full', full);
+  $('#veraBubbleText').textContent = t('vera_ready');
+}
+function renderProgressDots(){
+  $('#progress').innerHTML = Array.from({length: CONFIG.BOX_SIZE}, (_,i)=>{
+    const id = box[i];
+    const on = id ? ' on' : '';
+    // el punto que corresponde al ultimo sabor agregado "pop-ea" al llenarse
+    const pop = (id && !REDUCED_MOTION && i===box.length-1) ? ' pop' : '';
+    const bg = id ? FLAVOR_BY_ID[id].color : '#fff';
+    return `<span class="progress__dot${on}${pop}" style="background:${bg}"></span>`;
+  }).join('');
+}
+// Precio del builder: roll/count-up rapido entre el valor anterior y el nuevo (WAAPI-free, rAF).
+let lastPriceVal = 0;
+function animatePrice(newVal){
+  const el = $('#builderPrice');
+  if (!newVal){ el.textContent = ''; lastPriceVal = 0; return; }
+  if (REDUCED_MOTION || Math.abs(newVal-lastPriceVal) < .001){ el.textContent = fmt(newVal); lastPriceVal = newVal; return; }
+  const startVal = lastPriceVal, start = performance.now(), dur = 260;
+  function step(now){
+    const p = Math.min(1, (now-start)/dur);
+    const eased = 1 - Math.pow(1-p, 3);
+    el.textContent = fmt(Math.max(0, startVal + (newVal-startVal)*eased));
+    if (p < 1) requestAnimationFrame(step); else { el.textContent = fmt(newVal); lastPriceVal = newVal; }
+  }
+  requestAnimationFrame(step);
+}
+function renderBuilder(){
+  $('#builderTitle').textContent = t('builder_title');
+  $('#builderHint').textContent  = boxFull() ? t('box_full_hint') : t('builder_hint');
+  $('#btnPreset').textContent    = t('preset');
+  $('#btnClear').textContent     = t('clear');
+  $('#counter').textContent      = t('counter')(boxCount());
+  animatePrice(boxCount() ? boxLivePrice() : 0);
+  const addBtn = $('#btnAddBox');
+  addBtn.textContent = t('add_box');
+  addBtn.disabled = !boxFull() || flightPending.size>0;
+  renderPicker();
+  renderBox2D(pendingAnimate); pendingAnimate = null;
+  renderProgressDots();
+  renderVera();
+  // desactivar botones de sabor si la caja está llena
+  document.querySelectorAll('.fbtn').forEach(b => b.disabled = boxFull());
+}
+
+function wiggleBox(){
+  const c = document.getElementById('box2d');
+  if(!c) return;
+  c.classList.remove('wiggle'); void c.offsetWidth; c.classList.add('wiggle');
+}
+
+// Vuela una mini Vera (colorway del sabor) en arco desde el botón tocado hasta el slot destino,
+// con squash/stretch. Al aterrizar: quita el elemento volador, marca el slot como "land" (burst)
+// y hace vibrar la caja. Usa la Web Animations API (sin dependencias nuevas).
+function flyMiniVera(sourceEl, slotEl, flavor, idx){
+  const startR = sourceEl.getBoundingClientRect();
+  const endR = (slotEl || $('#box2d')).getBoundingClientRect();
+  const size = Math.max(30, Math.min(endR.width, endR.height) * .92);
+  const img = document.createElement('img');
+  img.src = flavor.mini; img.alt = ''; img.className = 'flyVera';
+  img.style.width = size + 'px'; img.style.height = 'auto';
+  img.style.left = (startR.left + startR.width/2 - size/2) + 'px';
+  img.style.top  = (startR.top + startR.height/2 - size/2) + 'px';
+  document.body.appendChild(img);
+
+  const dx = (endR.left + endR.width/2) - (startR.left + startR.width/2);
+  const dy = (endR.top + endR.height*0.78) - (startR.top + startR.height/2);
+  const lift = -Math.max(110, Math.abs(dy)*0.85 + 70);
+  const kf = [
+    { transform:'translate(0px,0px) scale(.35) rotate(-20deg)', offset:0,   opacity:0 },
+    { transform:`translate(${dx*.16}px,${dy*.16+lift*.4}px) scale(1.25) rotate(10deg)`,  offset:.24, opacity:1 },
+    { transform:`translate(${dx*.5}px,${dy*.5+lift}px) scale(1.05) rotate(-8deg)`,       offset:.55, opacity:1 },
+    { transform:`translate(${dx*.84}px,${dy*.84+lift*.22}px) scale(1.18,.8) rotate(6deg)`, offset:.84, opacity:1 },
+    { transform:`translate(${dx}px,${dy}px) scale(.6,1.3) rotate(0deg)`,  offset:.93, opacity:1 },
+    { transform:`translate(${dx}px,${dy}px) scale(1,1) rotate(0deg)`,     offset:1,   opacity:1 },
+  ];
+  const anim = img.animate(kf, { duration:640, easing:'cubic-bezier(.33,0,.2,1)', fill:'forwards' });
+  const done = anim.finished ? anim.finished.catch(()=>{}) : new Promise(res => { anim.onfinish = res; });
+  done.then(()=>{
+    img.remove();
+    flightPending.delete(idx);
+    pendingAnimate = [idx];
+    renderBuilder();
+    wiggleBox();
+  });
+}
+
+// Vuela un item pequeño (mini Vera del sabor, o Vera generica) en arco desde el boton de "añadir"
+// hasta el icono del carrito (#cartBtn), en el mismo espiritu que flyMiniVera. Se resuelve al instante
+// (sin animar) si el usuario prefiere menos movimiento o falta alguno de los elementos.
+function flyToCart(sourceEl, imgSrc){
+  if (REDUCED_MOTION || !sourceEl) return Promise.resolve();
+  const cartEl = $('#cartBtn');
+  if (!cartEl) return Promise.resolve();
+  const startR = sourceEl.getBoundingClientRect();
+  const endR = cartEl.getBoundingClientRect();
+  const size = 32;
+  const img = document.createElement('img');
+  img.src = imgSrc; img.alt = ''; img.className = 'flyVera';
+  img.style.width = size + 'px'; img.style.height = 'auto';
+  img.style.left = (startR.left + startR.width/2 - size/2) + 'px';
+  img.style.top  = (startR.top + startR.height/2 - size/2) + 'px';
+  document.body.appendChild(img);
+  const dx = (endR.left + endR.width/2) - (startR.left + startR.width/2);
+  const dy = (endR.top + endR.height/2) - (startR.top + startR.height/2);
+  const lift = -Math.max(90, Math.abs(dy)*0.6 + 60);
+  const kf = [
+    { transform:'translate(0px,0px) scale(.5) rotate(-10deg)', offset:0,   opacity:0 },
+    { transform:`translate(${dx*.2}px,${dy*.2+lift*.5}px) scale(1.1) rotate(8deg)`,   offset:.28, opacity:1 },
+    { transform:`translate(${dx*.6}px,${dy*.6+lift}px) scale(.9) rotate(-6deg)`,      offset:.62, opacity:1 },
+    { transform:`translate(${dx*.9}px,${dy*.9+lift*.15}px) scale(.55) rotate(4deg)`,  offset:.9,  opacity:.9 },
+    { transform:`translate(${dx}px,${dy}px) scale(.15) rotate(0deg)`,                 offset:1,   opacity:0 },
+  ];
+  const anim = img.animate(kf, { duration:560, easing:'cubic-bezier(.33,0,.2,1)', fill:'forwards' });
+  const done = anim.finished ? anim.finished.catch(()=>{}) : new Promise(res => { anim.onfinish = res; });
+  return done.then(()=>{ img.remove(); });
+}
+
+function boxAdd(id, sourceEl){
+  if(!addToBox(id)) return;
+  lastAddedFlavor = id; lastAddedAt = Date.now();
+  const idx = box.length-1;
+  if (REDUCED_MOTION || !sourceEl){
+    pendingAnimate = [idx];
+    renderBuilder();
+    if(!REDUCED_MOTION) wiggleBox();
+    return;
+  }
+  flightPending.add(idx);
+  renderBuilder(); // contador/precio ya reflejan el nuevo item; el slot se ve "waiting" hasta aterrizar
+  const slotEl = $('#box2d').children[idx];
+  flyMiniVera(sourceEl, slotEl, FLAVOR_BY_ID[id], idx);
+}
+function boxRemove(i){
+  if (i<0 || i>=box.length || poofing.has(i)) return;
+  if (REDUCED_MOTION){ if(removeFromBoxAt(i)) renderBuilder(); return; }
+  poofing.add(i);
+  const slotEl = $('#box2d').children[i];
+  if (slotEl) slotEl.classList.add('poof');
+  setTimeout(()=>{
+    poofing.delete(i);
+    if(removeFromBoxAt(i)) renderBuilder();
+  }, 260);
+}
+
+$('#picker').addEventListener('click', (e)=>{ const b=e.target.closest('[data-add]'); if(b && !b.disabled) boxAdd(b.dataset.add, b); });
+$('#box2d').addEventListener('click', (e)=>{ const s=e.target.closest('[data-remove]'); if(s) boxRemove(+s.dataset.remove); });
+$('#btnPreset').addEventListener('click', ()=>{ presetOnePerDay(); pendingAnimate = [0,1,2,3,4]; renderBuilder(); if(!REDUCED_MOTION) wiggleBox(); });
+$('#btnClear').addEventListener('click', ()=>{ clearBox(); renderBuilder(); });
+$('#btnAddBox').addEventListener('click', (e)=>{
+  if(!addBoxToCart()) return;
+  const srcEl = e.currentTarget;
+  clearBox(); presetOnePerDay(); renderBuilder(); renderCartBadge();
+  if(!$('#cartModal').hidden) renderCart();
+  showAddedToast();
+  flyToCart(srcEl, 'verana-assets/mascot/vera-mini-verde.png').then(openCartFlash);
+});
+
+function renderCart(){
+  $('#cartTitle').textContent = t('cart_title');
+  $('#cartTotalLabel').textContent = t('cart_total');
+  $('#cartName').placeholder = t('cart_name');
+  $('#cartDay').placeholder = t('cart_day');
+  $('#cartOrder').textContent = t('cart_order');
+  const entries = Object.entries(cart);
+  $('#cartBody').innerHTML = entries.length
+    ? entries.map(([id,i])=>`<div class="cartrow">
+        <div class="cartrow__name">${cartLineLabel(i)}<br><small>${fmt(i.price)} c/u</small></div>
+        <div class="cartrow__ctrl">
+          <button class="qtybtn" data-q="-1" data-line="${id}">−</button>
+          <span>${i.qty}</span>
+          <button class="qtybtn" data-q="1" data-line="${id}">+</button>
+        </div></div>`).join('')
+    : `<div class="cart-empty"><img src="verana-assets/mascot/vera-verde.png" alt="" width="104" height="104"><p>${t('cart_empty')}</p></div>`;
+  $('#cartTotalVal').textContent = fmt(cartTotal());
+  const order = $('#cartOrder');
+  if(entries.length){ order.href = waLink($('#cartName').value.trim(), $('#cartDay').value.trim()); order.style.opacity=''; order.style.pointerEvents=''; }
+  else { order.href='#'; order.style.opacity='.45'; order.style.pointerEvents='none'; }
+}
+function openCart(){ renderCart(); $('#cartModal').hidden=false; document.body.style.overflow='hidden'; $('#cartModal').querySelector('[data-close-cart]').focus(); }
+function closeCart(){ $('#cartModal').hidden=true; document.body.style.overflow=''; }
+
+function renderStatic(){
+  $('#heroCta').textContent = t('hero_cta') + ' →';
+  $('#heroNaturalBig').textContent = t('hero_natural_big');
+  $('#heroNaturalBig2').textContent = t('hero_natural_big2');
+  $('#heroNaturalSub').textContent = t('hero_natural_sub');
+  $('#howTitle').textContent = t('how_title');
+  $('#how1').textContent = t('how1');
+  $('#how2').textContent = t('how2');
+  $('#how3').textContent = t('how3');
+  $('#footerLegal').textContent = t('footer_legal');
+  $('#cartBtn').setAttribute('aria-label', t('aria_cart'));
+  document.querySelectorAll('[data-close-detail],[data-close-cart]').forEach(b => b.setAttribute('aria-label', t('aria_close')));
+}
+function renderAll(){
+  renderBuilder();
+  renderMenu();
+  renderStatic();
+  renderCart();
+  renderCartBadge();
+  initReveal();
+}
+
+// ---- Efectos de scroll: reveal-on-scroll (IntersectionObserver) + parallax sutil (scroll) ----
+// Ambos se saltan por completo si el usuario prefiere menos movimiento.
+let revealObserver = null;
+function ensureRevealObserver(){
+  if (revealObserver || !('IntersectionObserver' in window)) return revealObserver;
+  revealObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold:.15 });
+  return revealObserver;
+}
+function initReveal(){
+  if (REDUCED_MOTION) return;
+  const obs = ensureRevealObserver();
+  document.querySelectorAll('.reveal').forEach(el=>{
+    if (el.dataset.revealObserved) return;
+    el.dataset.revealObserved = '1';
+    if (obs) obs.observe(el); else el.classList.add('in');
+  });
+}
+
+// Parallax: la textura de fondo (y el logo/Vera del hero) se desplazan a una fracción
+// del scroll, atados a la posición propia de #topFlow (no al scrollY absoluto) para
+// que el efecto sea proporcional y se detenga con naturalidad al salir de vista.
+// Escritura directa de transform en cada evento de scroll (sin rAF): son solo un par
+// de estilos por evento, sin lectura de layout intercalada que fuerce reflow, asi que
+// no hay layout thrash; evita ademas depender de rAF, que algunos navegadores/pestañas
+// en segundo plano pueden pausar o retrasar.
+function initParallax(){
+  if (REDUCED_MOTION) return;
+  const topFlowEl = document.getElementById('topFlow');
+  const bgEl = document.getElementById('topFlowBg');
+  const heroInEl = document.getElementById('heroIn');
+  if (!topFlowEl || !bgEl) return;
+  function update(){
+    const rect = topFlowEl.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+    const progress = -rect.top;
+    const bgShift = Math.max(-70, Math.min(70, progress * 0.16));
+    bgEl.style.transform = `translate3d(0, ${bgShift}px, 0)`;
+    if (heroInEl){
+      const heroShift = Math.max(-24, Math.min(24, progress * 0.06));
+      heroInEl.style.transform = `translate3d(0, ${heroShift}px, 0)`;
+    }
+  }
+  window.addEventListener('scroll', update, { passive:true });
+  update();
+}
+$('#lang').addEventListener('click', (e)=>{ const b=e.target.closest('button'); if(b) applyLang(b.dataset.lang); });
+$('#brandLink').addEventListener('click', (e)=>{ e.preventDefault(); window.scrollTo({top:0, behavior:'smooth'}); });
+const __hdrEl = document.querySelector('.hdr');
+addEventListener('scroll', ()=>{ if(__hdrEl) __hdrEl.classList.toggle('hdr--scrolled', window.scrollY>8); }, {passive:true});
+document.addEventListener('click', (e)=>{
+  const det = e.target.closest('[data-detail]');
+  const single = e.target.closest('[data-addsingle]');
+  if (single){
+    e.stopPropagation();
+    const fid = single.dataset.addsingle;
+    addSingle(fid); renderCartBadge(); showAddedToast();
+    if(!$('#cartModal').hidden) renderCart();
+    const f = FLAVOR_BY_ID[fid];
+    flyToCart(single, f ? f.mini : 'verana-assets/mascot/vera-mini-verde.png').then(openCartFlash);
+    return;
+  }
+  if (det){ openDetail(det.dataset.detail); return; }
+});
+$('#detailModal').addEventListener('click', (e)=>{ if(e.target.id==='detailModal' || e.target.hasAttribute('data-close-detail')) closeDetail(); });
+$('#cartBtn').addEventListener('click', openCart);
+$('#cartModal').addEventListener('click', (e)=>{ if(e.target.id==='cartModal' || e.target.hasAttribute('data-close-cart')) closeCart(); });
+$('#cartBody').addEventListener('click', (e)=>{ const b=e.target.closest('[data-line]'); if(b){ setLineQty(b.dataset.line, +b.dataset.q); renderCart(); renderCartBadge(); } });
+$('#cartName').addEventListener('input', renderCart);
+$('#cartDay').addEventListener('input', renderCart);
+document.addEventListener('keydown', (e)=>{
+  if(e.key!=='Escape') return;
+  if(!$('#detailModal').hidden) closeDetail();
+  else if(!$('#cartModal').hidden) closeCart();
+});
+
+// Aserciones de lógica pura. Ejecutar en consola: VERANA_SELFTEST()
+window.VERANA_SELFTEST = function(){
+  const A = (cond, msg) => { if(!cond) throw new Error('SELFTEST FALLÓ: '+msg); };
+  // reset
+  box = []; cart = {};
+  A(boxCount()===0, 'caja arranca vacía');
+  presetOnePerDay();
+  A(boxCount()===5 && new Set(box).size===5, 'preset = 5 sabores distintos');
+  A(!addToBox('gl'), 'no se puede exceder BOX_SIZE');
+  clearBox(); A(boxCount()===0, 'clearBox vacía');
+  A(addToBox('en') && addToBox('en'), 'repetición permitida');
+  A(Math.abs(boxLivePrice() - 2*CONFIG.PRICE.packUnit) < 1e-9, 'precio en vivo por unidad');
+  const comp = boxComposition(['gl','en','en']);
+  A(comp.sig==='gl1-en2', 'firma de composición estable');
+  // llenar y agregar caja
+  box = ['gl','gl','en','pe','li']; A(boxFull(),'caja llena');
+  A(addBoxToCart(), 'agrega caja al carrito');
+  A(Math.abs(cartTotal() - PACK_PRICE) < 1e-9, 'total = precio de pack');
+  addSingle('pr'); A(cartCount()===2, 'suma bolsita suelta');
+  const msg = waMessage('Ana','martes');
+  A(msg.includes('Ana') && msg.includes(t('wa_total')), 'mensaje WA con nombre y total');
+  cart = {}; box = []; saveCart();
+  console.log('%cVERANA_SELFTEST OK','color:#005011;font-weight:700');
+  return true;
+};
+
+function openCartFlash(){ const b=$('#cartBtn'); b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
+
+// Feedback de "añadido": Vera aparece brevemente junto al mensaje de confirmación.
+let toastTimer = null;
+function showAddedToast(){
+  const el = $('#addedToast');
+  $('#addedToastText').textContent = t('added_toast');
+  clearTimeout(toastTimer);
+  el.classList.add('show');
+  toastTimer = setTimeout(()=> el.classList.remove('show'), 1800);
+}
+
+applyLang(LANG);                              // renderiza todo; la caja arranca vacía (box2d 2D/SVG)
+initParallax();                               // una sola vez: listener de scroll, ver arriba
+</script>
+</body>
+</html>
